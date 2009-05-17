@@ -1,0 +1,21 @@
+To install this plasmoid, unpack archive, go to it's main directory (applet/) and execute install.sh script.
+
+-installer_local.sh will install to the local users profile
+-installer_global.sh will install to the global profile and requires root privelleges to install
+
+
+Alternatively you can run following commands:
+
+mkdir build
+cd build
+cmake ../ -DCMAKE_INSTALL_PREFIX=~/.kde4
+make
+make install
+kbuildsycoca4
+
+After this, the plasmoid should show up in the add widgets dialog.
+
+If not, you can try to execute:
+
+kquitapp plasma
+plasma
