@@ -1,6 +1,7 @@
+Description:
 A simple front-end to the GeeXboX uShare UPnP media server utility.
 
-Starts a uShare instance with the list of shared folders (started with XboX compatibility).  Created it with the primary purpose of being able to easily share my video/music files with my Xbox360.
+Starts a uShare instance with the list of shared folders (started with XboX compatibility). Created it with the primary purpose of being able to easily share my video/music files with my Xbox360.
 
 NOTE: uShare must be installed and be accessible from the user environment as "ushare"
 
@@ -8,7 +9,27 @@ See: GeeXboX uShare: <http://ushare.geexbox.org/>
 
 Requirements:
 KDE4 >= 4.x
+uShare
+
+Source
+Current source available at git repository:
+<http://github.com/amoskahiga/ushareoid>
 
 Features:
 - Add folders to share.
 - Start and stop the uShare instance.
+
+Installation:
+Extract contents and run installation scripts:
+- install_local.sh will install to the local users profile
+- install_global.sh will install to the global profile and requires root privileges to install
+
+Alternatively you can run following commands:
+>mkdir build
+>cd build
+>cmake ../ DCMAKE_INSTALL_PREFIX=~/.kde4
+>make
+>make install
+>kbuildsycoca4
+
+After this, the Plasmoid should show up in the add widgets dialog.
