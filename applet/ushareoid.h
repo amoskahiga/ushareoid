@@ -23,6 +23,8 @@
 #include <Plasma/PopupApplet>
 #include <QProcess>
 
+#include "configdialog.h"
+
 class QGraphicsGridLayout;
 class QStringListModel;
 class QGraphicsWidget;
@@ -35,7 +37,13 @@ namespace Plasma
     class IconWidget;
 }
 
-// Define our plasma Applet
+/**
+ * A plasmoid that provides a front-end to the popular GeeXboX uShare utility. It starts a uShare
+ * instance with a list of shared folders.
+ *
+ * @see Hosted at ushareoid: <http://www.kde-look.org/content/show.php?content=105025>
+ * @see Git repository: <http://github.com/amoskahiga/ushareoid>
+ */
 class Ushareoid : public Plasma::PopupApplet
 {
     Q_OBJECT
@@ -52,9 +60,12 @@ class Ushareoid : public Plasma::PopupApplet
         Plasma::PushButton* m_shareButton;
         Plasma::TextEdit* m_statusEdit;
         Plasma::IconWidget* m_icon;
+        ConfigDialog* m_configDialog;
+        ConfigDialog::Settings m_settings;
         enum {NOT_SHARING, SHARING} m_sharingStatus;
 
         virtual QGraphicsWidget *graphicsWidget();
+        void createConfigurationInterface(KConfigDialog* parent);
 
     public:
 
@@ -71,6 +82,7 @@ class Ushareoid : public Plasma::PopupApplet
         void processStarted();
         void processFinished(int,QProcess::ExitStatus);
         void toolTipAboutToShow();
+        void configAccepted();
 
 };
 

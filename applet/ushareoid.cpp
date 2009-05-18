@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 200p Amos Kariuki    <amoskahiga@hotmail.com>           *
+ *   Copyright (C) 2009 Amos Kariuki    <amoskahiga@hotmail.com>           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,35 +16,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#include "ushareoid.h"
 
 #include <QGraphicsGridLayout>
 #include <QTreeView>
 #include <QStringListModel>
 #include <QHeaderView>
-#include <QFileDialog>
+#include <KUrl>
+#include <KDirSelectDialog>
 #include <KPushButton>
 #include <KTextEdit>
+#include <KConfigDialog>
 #include <Plasma/ToolTipManager>
 #include <Plasma/TreeView>
 #include <Plasma/TextEdit>
 #include <Plasma/PushButton>
 
+#include "ushareoid.h"
+
 /**
  * Constructor.
- * @param parent
+ * @param parent Owner.
  * @param args
  */
 Ushareoid::Ushareoid(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args),
     m_widget(0),
+    m_configDialog(0),
     m_sharingStatus(NOT_SHARING)
 {
     // this will get us the standard applet background, for free!
     setBackgroundHints(DefaultBackground);
 
     setAspectRatioMode(Plasma::IgnoreAspectRatio);
-    //setPreferredSize(300, 500);
     setPopupIcon("ushareoid");
 
     m_process = new QProcess(this);
@@ -66,50 +69,66 @@ Ushareoid::~Ushareoid()
         // Save settings
         KConfigGroup configGroup = globalConfig();
         configGroup.writePathEntry("defaultFolders", m_folderListModel->stringList());
-        configGroup.config()->sync();
     }
+
+    delete m_process;
 }
 
 /**
- * Initializer called once the applet is loaded and added to a Corona.
- * If the applet requires a QGraphicsScene or has an particularly intensive set of initialization
- * routines to go through, consider implementing it in this method instead of the constructor.
- *
- * Note: paintInterface may get called before init() depending on initialization order. Painting is
- * managed by the canvas (QGraphisScene), and may schedule a paint event prior to init() being
- * called.
+ * Gets the widget that will get shown in the applet or in a Dialog, depending on the form factor of
+ * the applet (it may be docked in a panel or displayed on a desktop).
  */
 QGraphicsWidget* Ushareoid::graphicsWidget()
 {
-    setAspectRatioMode(Plasma::IgnoreAspectRatio);
-
-    // Register taskbar tooltips
-    Plasma::ToolTipManager::self()->registerWidget(this);
-
     if (!m_widget) {
+
+        // Get the configuration settings
+        KConfigGroup configGroup = globalConfig();
+        QStringList folderList = configGroup.readPathEntry("defaultFolders", QStringList());
+        m_settings.ushareExecutable = configGroup.readEntry("ushareExecutable", "");
+        m_settings.networkInterface = configGroup.readEntry("networkInterface", "");
+        m_settings.port = configGroup.readEntry("port", 0);
+        m_settings.enableXboxCompliantProfile =
+                configGroup.readEntry("enableXboxCompliantProfile", true);
+        m_settings.enableWebPageControl = configGroup.readEntry("enableWebPageControl", false);
+        m_settings.enableTelnetControl = configGroup.readEntry("enableTelnetControl", false);
+
+        setAspectRatioMode(Plasma::IgnoreAspectRatio);
+
+        // Register taskbar tooltips
+        Plasma::ToolTipManager::self()->registerWidget(this);
 
         m_widget = new QGraphicsWidget(this);
         m_layout = new QGraphicsGridLayout(m_widget);
 
-        // Load the last loaded folder entries
-        KConfigGroup configGroup = globalConfig();
         m_folderListModel = new QStringListModel(m_widget);
-        m_folderListModel->setStringList(
-                configGroup.readPathEntry("defaultFolders", QStringList()));
+        m_folderListModel->setStringList(folderList);
+
+        /**
+         * To change the header for the m_folderListModel (Displayed in the TreeView), we would
+         * have to subclass QStringListModel and reimplement setHeaderData()
+         *
+         * @see <http://www.qtsoftware.com/developer/task-tracker/index_html?id=188749&method=entry>
+
+        qDebug() << m_folderListModel->setHeaderData( 0, Qt::Horizontal, "Shared Folders",
+                                                      Qt::DisplayRole);
+        */
 
         m_folderView = new Plasma::TreeView(m_widget);
         m_folderView->setModel(m_folderListModel);
-        m_folderView->nativeWidget()->header()->hide();        
+        m_folderView->nativeWidget()->header()->hide();
 
         m_statusEdit = new Plasma::TextEdit(m_widget);
         m_statusEdit->nativeWidget()->setReadOnly(true);
         m_statusEdit->hide();
 
         m_addFolderButton = new Plasma::PushButton(m_widget);
+        m_addFolderButton->nativeWidget()->setIcon(KIcon("list-add"));
         m_addFolderButton->setText("Add Folder...");
         connect(m_addFolderButton, SIGNAL(clicked()), this, SLOT(addFolderButtonClick()));
 
         m_removeFolderButton = new Plasma::PushButton(m_widget);
+        m_removeFolderButton->nativeWidget()->setIcon(KIcon("list-remove"));
         m_removeFolderButton->setText("Remove Folder");
         connect(m_removeFolderButton, SIGNAL(clicked()), this, SLOT(removeFolderButtonClick()));
 
@@ -137,17 +156,17 @@ QGraphicsWidget* Ushareoid::graphicsWidget()
  */
 void Ushareoid::addFolderButtonClick()
 {
-    QString dir = QFileDialog::getExistingDirectory(NULL, tr("Open Directory"),
-                                                 "~",
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
+    KDirSelectDialog dialog(KUrl(), true);
 
-    QStringList list = m_folderListModel->stringList();
-    list.append(dir);
-    list.removeDuplicates();
-    list.sort();
-    m_folderListModel->setStringList(list);
-
+    if (dialog.exec()) {
+        QString path = dialog.url().path();
+        if (!m_folderListModel->stringList().contains(path)) {
+            QStringList list = m_folderListModel->stringList();
+            list.append(path);
+            list.sort();
+            m_folderListModel->setStringList(list);
+        }
+    }
 }
 
 /**
@@ -166,30 +185,58 @@ void Ushareoid::removeFolderButtonClick()
 }
 
 /**
- * Starts a "ushare" process.  The folders listed in the string-list view will be shared.
+ * Starts a "ushare" process with the loaded settings.  The folders listed in the string-list view
+ *  will be shared.
  */
 void Ushareoid::shareButtonClick()
 {
-    QString program = "ushare";
-    QStringList arguments;
-    arguments << "-x";
+    if (m_process->state() == QProcess::Running) {
 
-    foreach (QString dir, m_folderListModel->stringList()) {
-        arguments << "-c" << dir;
-    }
-
-    if(m_process->state() == QProcess::Running) {
         m_process->close();
     }
     else {
-        m_process->start(program, arguments);
-    }
 
+        // Set the default executable name if it's not set.
+        if (m_settings.ushareExecutable.isEmpty())
+            m_settings.ushareExecutable = "ushare";
+
+        // Set application/process arguments based on possible persisted settings.
+        QStringList arguments;
+
+        if (!m_settings.networkInterface.isEmpty())
+            arguments << "-i" << m_settings.networkInterface;
+
+        if (m_settings.port)
+            arguments << "-p" << QString::number(m_settings.port);
+
+        if (m_settings.enableXboxCompliantProfile)
+            arguments << "-x";
+
+        if (!m_settings.enableTelnetControl)
+            arguments << "-t";
+
+        if (!m_settings.enableWebPageControl)
+            arguments << "-w";
+
+        foreach (QString dir, m_folderListModel->stringList()) {
+            arguments << "-c" << dir;
+        }
+
+        m_process->start(m_settings.ushareExecutable, arguments);
+
+        qDebug() << m_settings.ushareExecutable << " " << arguments;
+    }
 }
 
 /**
  * Updates the Status view with the output of the ushare process.  All messages to the stdout or
  * stderr will be written to the view.
+ *
+ * @todo Does not currently work as intended--the ushare utlitly seems to be buffering the output
+ *       thereby preventing the applet from displaying it.
+ *       NOTE: Even though the output is immediately displayed when 'ushare' is run from the
+ *             terminal, the C runtime library may be detecting the output device and determining
+ *             the stdout buffering behaviour.  stderr is not buffered and is available immediately.
  */
 void Ushareoid::updateStatusEdit()
 {
@@ -228,14 +275,44 @@ void Ushareoid::toolTipAboutToShow()
     data.setImage(KIcon("ushareoid").pixmap(IconSize(KIconLoader::Panel)));
     data.setMainText("uShare");
 
-    if(m_sharingStatus == SHARING) {
+    if (m_sharingStatus == SHARING) {
          data.setSubText("Sharing...");
-     }
-    else
-    {   // NOT_SHARING
+    }
+    else {   // NOT_SHARING
         data.setSubText("Not Sharing...");
     }
     Plasma::ToolTipManager::self()->setContent(this, data);;
+}
+
+/**
+ * Creates a configuration dialog that will be used to display and set our applet's persisted
+ * settings.  The dialog is initialized with our previously persisted settings.
+ */
+void Ushareoid::createConfigurationInterface(KConfigDialog* parent)
+{
+    m_configDialog = new ConfigDialog(parent);
+    m_configDialog->setSettings(m_settings);
+    parent->addPage(m_configDialog, QString("uShare Settings"), icon());
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
+}
+
+/**
+ * Called when the user chooses to save the changes of the applet's configuration/settings dialog.
+ * It persists the settings to the applet's configuration file.
+ */
+void Ushareoid::configAccepted()
+{
+    // Get the new settings
+    m_settings = m_configDialog->getSettings();
+
+    // Save the configuration settings
+    KConfigGroup configGroup = globalConfig();
+    configGroup.writeEntry("ushareExecutable", m_settings.ushareExecutable);
+    configGroup.writeEntry("networkInterface", m_settings.networkInterface);
+    configGroup.writeEntry("port", m_settings.port);
+    configGroup.writeEntry("enableXboxCompliantProfile", m_settings.enableXboxCompliantProfile);
+    configGroup.writeEntry("enableWebPageControl", m_settings.enableWebPageControl);
+    configGroup.writeEntry("enableTelnetControl", m_settings.enableTelnetControl);
 }
 
 #include "ushareoid.moc"
