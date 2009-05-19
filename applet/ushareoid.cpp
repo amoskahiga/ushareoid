@@ -85,7 +85,8 @@ QGraphicsWidget* Ushareoid::graphicsWidget()
         // Get the configuration settings
         KConfigGroup configGroup = globalConfig();
         QStringList folderList = configGroup.readPathEntry("defaultFolders", QStringList());
-        m_settings.ushareExecutable = configGroup.readEntry("ushareExecutable", "");
+        m_settings.ushareExecutable = configGroup.readEntry("ushareExecutable", "ushare");
+        m_settings.friendlyName = configGroup.readEntry("friendlyName", "uShareoid");
         m_settings.networkInterface = configGroup.readEntry("networkInterface", "");
         m_settings.port = configGroup.readEntry("port", 0);
         m_settings.enableXboxCompliantProfile =
@@ -203,6 +204,11 @@ void Ushareoid::shareButtonClick()
         // Set application/process arguments based on possible persisted settings.
         QStringList arguments;
 
+        if (!m_settings.friendlyName.isEmpty())
+            arguments << "-n" << m_settings.friendlyName;
+        else    // Set the default name that shows up in the UPnP browser.
+            arguments << "-n" << "uShareoid";
+
         if (!m_settings.networkInterface.isEmpty())
             arguments << "-i" << m_settings.networkInterface;
 
@@ -223,8 +229,6 @@ void Ushareoid::shareButtonClick()
         }
 
         m_process->start(m_settings.ushareExecutable, arguments);
-
-        qDebug() << m_settings.ushareExecutable << " " << arguments;
     }
 }
 
@@ -308,6 +312,7 @@ void Ushareoid::configAccepted()
     // Save the configuration settings
     KConfigGroup configGroup = globalConfig();
     configGroup.writeEntry("ushareExecutable", m_settings.ushareExecutable);
+    configGroup.writeEntry("friendlyName", m_settings.friendlyName);
     configGroup.writeEntry("networkInterface", m_settings.networkInterface);
     configGroup.writeEntry("port", m_settings.port);
     configGroup.writeEntry("enableXboxCompliantProfile", m_settings.enableXboxCompliantProfile);

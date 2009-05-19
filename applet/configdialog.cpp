@@ -45,6 +45,7 @@ ConfigDialog::Settings ConfigDialog::getSettings()
     Settings settings;
 
     settings.ushareExecutable = configUi.ushareExecutaleLineEdit->text().trimmed();
+    settings.friendlyName = configUi.friendlyNameLineEdit->text().trimmed();
     settings.networkInterface = configUi.networkInterfaceLineEdit->text().trimmed();
     settings.port = configUi.portSpinBox->value();
     settings.enableXboxCompliantProfile = configUi.enableXboxCompliantProfileCheckBox->isChecked();
@@ -61,6 +62,7 @@ ConfigDialog::Settings ConfigDialog::getSettings()
 void ConfigDialog::setSettings(Settings newSettings)
 {
     configUi.ushareExecutaleLineEdit->setText(newSettings.ushareExecutable);
+    configUi.friendlyNameLineEdit->setText(newSettings.friendlyName);
     configUi.networkInterfaceLineEdit->setText(newSettings.networkInterface);
     configUi.portSpinBox->setValue(newSettings.port);
     configUi.enableXboxCompliantProfileCheckBox->setChecked(newSettings.enableXboxCompliantProfile);

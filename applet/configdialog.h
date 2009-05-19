@@ -36,6 +36,7 @@ class ConfigDialog : public QWidget
         struct Settings
         {
             QString ushareExecutable;
+            QString friendlyName;
             QString networkInterface;
             int port;
             bool enableXboxCompliantProfile;

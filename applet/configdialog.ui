@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>206</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>450</width>
-    <height>200</height>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
      <x>10</x>
      <y>0</y>
      <width>331</width>
-     <height>101</height>
+     <height>122</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout">
@@ -45,7 +45,7 @@
     <item row="0" column="1">
      <widget class="QLineEdit" name="ushareExecutaleLineEdit"/>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="networkInterfaceLabel">
       <property name="text">
        <string>Network interface:</string>
@@ -58,22 +58,32 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QLineEdit" name="networkInterfaceLineEdit"/>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="portLabel">
       <property name="text">
        <string>Port:</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="3" column="1">
      <widget class="QSpinBox" name="portSpinBox">
       <property name="maximum">
        <number>65535</number>
       </property>
      </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="friendlyNameLabel">
+      <property name="text">
+       <string>Firendly Name (UPnP):</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="friendlyNameLineEdit"/>
     </item>
    </layout>
   </widget>
@@ -81,8 +91,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>100</y>
-     <width>440</width>
+     <y>140</y>
+     <width>441</width>
      <height>79</height>
     </rect>
    </property>
