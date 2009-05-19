@@ -94,6 +94,10 @@ QGraphicsWidget* Ushareoid::graphicsWidget()
         m_settings.enableWebPageControl = configGroup.readEntry("enableWebPageControl", false);
         m_settings.enableTelnetControl = configGroup.readEntry("enableTelnetControl", false);
 
+        // Set default ushare executable name if none is set.
+        if(m_settings.ushareExecutable.isEmpty())
+            m_settings.ushareExecutable = "ushare";
+
         setAspectRatioMode(Plasma::IgnoreAspectRatio);
 
         // Register taskbar tooltips

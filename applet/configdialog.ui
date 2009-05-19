@@ -19,74 +19,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="formLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>331</width>
-     <height>122</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout">
-    <property name="fieldGrowthPolicy">
-     <enum>QFormLayout::ExpandingFieldsGrow</enum>
-    </property>
-    <property name="labelAlignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-    </property>
-    <item row="0" column="0">
-     <widget class="QLabel" name="ushareExecutableLabel">
-      <property name="text">
-       <string>uShare executable:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="ushareExecutaleLineEdit"/>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="networkInterfaceLabel">
-      <property name="text">
-       <string>Network interface:</string>
-      </property>
-      <property name="scaledContents">
-       <bool>false</bool>
-      </property>
-      <property name="wordWrap">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="networkInterfaceLineEdit"/>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="portLabel">
-      <property name="text">
-       <string>Port:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QSpinBox" name="portSpinBox">
-      <property name="maximum">
-       <number>65535</number>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="friendlyNameLabel">
-      <property name="text">
-       <string>Firendly Name (UPnP):</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="friendlyNameLineEdit"/>
-    </item>
-   </layout>
-  </widget>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
@@ -120,7 +52,115 @@
     </item>
    </layout>
   </widget>
+  <widget class="QLabel" name="friendlyNameLabel">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>32</y>
+     <width>141</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Firendly name (UPnP):</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="portLabel">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>94</y>
+     <width>31</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Port:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="networkInterfaceLabel">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>63</y>
+     <width>117</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Network interface:</string>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
+   </property>
+   <property name="wordWrap">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="portSpinBox">
+   <property name="geometry">
+    <rect>
+     <x>156</x>
+     <y>94</y>
+     <width>70</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>65535</number>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="networkInterfaceLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>156</x>
+     <y>63</y>
+     <width>240</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ushareExecutableLabel">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>1</y>
+     <width>123</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>uShare executable:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="friendlyNameLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>156</x>
+     <y>32</y>
+     <width>240</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="KUrlRequester" name="ushareExecutableKurlrequester">
+   <property name="geometry">
+    <rect>
+     <x>156</x>
+     <y>0</y>
+     <width>270</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KUrlRequester</class>
+   <extends>QFrame</extends>
+   <header>kurlrequester.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
