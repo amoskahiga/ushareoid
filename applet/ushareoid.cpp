@@ -30,6 +30,7 @@
 #include <Plasma/TreeView>
 #include <Plasma/TextEdit>
 #include <Plasma/PushButton>
+#include <Plasma/Label>
 
 #include "ushareoid.h"
 
@@ -122,6 +123,11 @@ QGraphicsWidget* Ushareoid::graphicsWidget()
         m_folderView = new Plasma::TreeView(m_widget);
         m_folderView->setModel(m_folderListModel);
         m_folderView->nativeWidget()->header()->hide();
+        m_folderView->setStyleSheet("border-color: white; border-width: 1px; border-style: solid;"
+                                    "border-radius: 4px;");
+
+        m_sharedLabel = new Plasma::Label(this);
+        m_sharedLabel->setText("Shared Folders:");
 
         m_statusEdit = new Plasma::TextEdit(m_widget);
         m_statusEdit->nativeWidget()->setReadOnly(true);
@@ -143,11 +149,12 @@ QGraphicsWidget* Ushareoid::graphicsWidget()
         connect(m_shareButton, SIGNAL(clicked()), this, SLOT(shareButtonClick()));
 
         // Add widgets to the layout.
-        m_layout->addItem(m_folderView, 0, 0, 4, 1);
+        m_layout->addItem(m_sharedLabel, 0, 0);
+        m_layout->addItem(m_folderView, 1, 0, 4, 1);
         //m_layout->addItem(m_statusEdit, 3, 0);
-        m_layout->addItem(m_addFolderButton, 0, 1);
-        m_layout->addItem(m_removeFolderButton, 1, 1);
-        m_layout->addItem(m_shareButton, 3, 1, Qt::AlignBottom);
+        m_layout->addItem(m_addFolderButton, 1, 1);
+        m_layout->addItem(m_removeFolderButton, 2, 1);
+        m_layout->addItem(m_shareButton, 4, 1, Qt::AlignBottom);
 
         m_widget->setPreferredSize(500, 300);
     }
@@ -172,6 +179,9 @@ void Ushareoid::addFolderButtonClick()
             m_folderListModel->setStringList(list);
         }
     }
+
+    // Keep showing the applet--would otherwise minimize if placed in a panel.
+    this->showPopup();
 }
 
 /**
@@ -270,6 +280,7 @@ void Ushareoid::processFinished(int exitCode, QProcess::ExitStatus)
     Q_UNUSED(exitCode);
 
     m_sharingStatus = NOT_SHARING;
+    Plasma::ToolTipManager::self()->show(this); // Inform the user we've stopped sharing
     m_shareButton->setText("Start Sharing");
     m_shareButton->nativeWidget()->setIcon(KIcon("media-playback-start"));
 }

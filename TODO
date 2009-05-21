@@ -1,2 +1,2 @@
-- Add a way to specify ushare executable location.
-- Allow toggling XboX compliant mode and any other features.
+- Allow toggling "dlna" (PS3) compliant mode and any other remaining features (DLNA support is not compiled into ushare by default).
+- When sharing multiple folders, the Xbox only detects the first one--figure out why or work around.

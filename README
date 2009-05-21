@@ -1,15 +1,11 @@
 Description:
-A simple front-end to the GeeXboX uShare UPnP media server utility.
+A simple KDE Plasmoid front-end to the GeeXboX uShare UPnP media server utility.
 
-Starts a uShare instance with the list of shared folders (started with XboX compatibility). Created it with the primary purpose of being able to easily share my video/music files with my Xbox360.
-
-NOTE: uShare must be installed and be accessible from the user environment as "ushare"
-
-See: GeeXboX uShare: <http://ushare.geexbox.org/>
+Starts a uShare instance with the list of shared folders. Created it with the primary purpose of being able to easily share my video/music files with my Xbox360.
 
 Requirements:
 KDE4 >= 4.x
-uShare
+GeeXboX uShare: <http://ushare.geexbox.org/>
 
 Source
 Current source available at git repository:
@@ -18,6 +14,7 @@ Current source available at git repository:
 Features:
 - Add folders to share.
 - Start and stop the uShare instance.
+- Set common uShares startup options/settings.
 
 Installation:
 Extract contents and run installation scripts:

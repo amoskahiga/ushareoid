@@ -62,7 +62,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Firendly name (UPnP):</string>
+    <string>UPnP friendly name:</string>
    </property>
   </widget>
   <widget class="QLabel" name="portLabel">
@@ -161,6 +161,15 @@
    <header>kurlrequester.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>ushareExecutableKurlrequester</tabstop>
+  <tabstop>friendlyNameLineEdit</tabstop>
+  <tabstop>networkInterfaceLineEdit</tabstop>
+  <tabstop>portSpinBox</tabstop>
+  <tabstop>enableTelnetControlCheckBox</tabstop>
+  <tabstop>enableXboxCompliantProfileCheckBox</tabstop>
+  <tabstop>enableWebPageControlCheckBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

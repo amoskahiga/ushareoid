@@ -35,6 +35,7 @@ namespace Plasma
     class TextEdit;
     class TreeView;
     class IconWidget;
+    class Label;
 }
 
 /**
@@ -54,6 +55,7 @@ class Ushareoid : public Plasma::PopupApplet
         QGraphicsWidget *m_widget;
         QStringListModel* m_folderListModel;
         QProcess* m_process;
+        Plasma::Label* m_sharedLabel;
         Plasma::TreeView* m_folderView;
         Plasma::PushButton* m_removeFolderButton;
         Plasma::PushButton* m_addFolderButton;
