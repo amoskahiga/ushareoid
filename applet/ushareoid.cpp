@@ -26,6 +26,8 @@
 #include <KPushButton>
 #include <KTextEdit>
 #include <KConfigDialog>
+#include <KTempDir>
+#include <kio/copyjob.h>
 #include <Plasma/ToolTipManager>
 #include <Plasma/TreeView>
 #include <Plasma/TextEdit>
@@ -42,6 +44,7 @@
 Ushareoid::Ushareoid(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args),
     m_widget(0),
+    m_virtualFolder(0),
     m_configDialog(0),
     m_sharingStatus(NOT_SHARING)
 {
@@ -73,6 +76,7 @@ Ushareoid::~Ushareoid()
     }
 
     delete m_process;
+    delete m_virtualFolder;
 }
 
 /**
@@ -229,17 +233,26 @@ void Ushareoid::shareButtonClick()
         if (m_settings.port)
             arguments << "-p" << QString::number(m_settings.port);
 
-        if (m_settings.enableXboxCompliantProfile)
-            arguments << "-x";
-
         if (!m_settings.enableTelnetControl)
             arguments << "-t";
 
         if (!m_settings.enableWebPageControl)
             arguments << "-w";
 
-        foreach (QString dir, m_folderListModel->stringList()) {
-            arguments << "-c" << dir;
+        if (m_settings.enableXboxCompliantProfile) {
+            arguments << "-x";
+
+            /**
+             * Generate a new folder-list with all shared items under a new temporary root folder
+             * and add the temporary root shared folder to the list of arguments
+             */
+            arguments << "-c" << createVirtualFolder(m_folderListModel->stringList());
+        }
+        else
+        {
+            // Add each folder separately to the list of arguments.
+            foreach (QString dir, m_folderListModel->stringList())
+                arguments << "-c" << dir;
         }
 
         m_process->start(m_settings.ushareExecutable, arguments);
@@ -333,6 +346,24 @@ void Ushareoid::configAccepted()
     configGroup.writeEntry("enableXboxCompliantProfile", m_settings.enableXboxCompliantProfile);
     configGroup.writeEntry("enableWebPageControl", m_settings.enableWebPageControl);
     configGroup.writeEntry("enableTelnetControl", m_settings.enableTelnetControl);
+}
+
+/**
+ * Creates a temporary virtual folder (if it doesn't exist yet) and links in all shared folders.
+ * @param folderList list of folders to link into the virtual folder
+ */
+QString Ushareoid::createVirtualFolder(QStringList folderList)
+{
+    // If we had already set up a shared virtual folder, delete it and its contents
+   delete m_virtualFolder;
+
+   m_virtualFolder = new KTempDir();
+
+    // Link all folders in the list to the virtual folder
+    KUrl::List urlList(folderList);
+    KIO::link(urlList, KUrl(m_virtualFolder->name()));
+
+    return m_virtualFolder->name();
 }
 
 #include "ushareoid.moc"

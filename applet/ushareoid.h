@@ -28,6 +28,7 @@
 class QGraphicsGridLayout;
 class QStringListModel;
 class QGraphicsWidget;
+class KTempDir;
 
 namespace Plasma
 {
@@ -55,6 +56,7 @@ class Ushareoid : public Plasma::PopupApplet
         QGraphicsWidget *m_widget;
         QStringListModel* m_folderListModel;
         QProcess* m_process;
+        KTempDir* m_virtualFolder;
         Plasma::Label* m_sharedLabel;
         Plasma::TreeView* m_folderView;
         Plasma::PushButton* m_removeFolderButton;
@@ -68,6 +70,7 @@ class Ushareoid : public Plasma::PopupApplet
 
         virtual QGraphicsWidget *graphicsWidget();
         void createConfigurationInterface(KConfigDialog* parent);
+        QString createVirtualFolder(QStringList folderList);
 
     public:
 
